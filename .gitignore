@@ -1,0 +1,9 @@
+build/
+DerivedData/
+TaskBoard.xcodeproj/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+.DS_Store
+xcuserdata/
+*.xcresult
+.qoder/

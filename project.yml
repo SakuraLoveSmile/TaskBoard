@@ -1,0 +1,71 @@
+name: TaskBoard
+options:
+  bundleIdPrefix: com.sakurasep.taskboard
+  deploymentTarget:
+    macOS: "26.0"
+  xcodeVersion: "27.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    MACOSX_DEPLOYMENT_TARGET: "26.0"
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGN_STYLE: Manual
+    ENABLE_HARDENED_RUNTIME: NO
+    GENERATE_INFOPLIST_FILE: NO
+    COMBINE_HIDPI_IMAGES: YES
+
+targets:
+  TaskBoard:
+    type: application
+    platform: macOS
+    sources:
+      - path: TaskBoard
+    info:
+      path: TaskBoard/Info.plist
+      properties:
+        CFBundleName: TaskBoard
+        CFBundleDisplayName: TaskBoard
+        CFBundleShortVersionString: "0.1.0"
+        CFBundleVersion: "1"
+        LSUIElement: true
+        LSMinimumSystemVersion: "26.0"
+        NSHumanReadableCopyright: "© 2026"
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+    entitlements:
+      path: TaskBoard/TaskBoard.entitlements
+      properties: {}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.sakurasep.taskboard
+        PRODUCT_NAME: TaskBoard
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.productivity
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+
+  TaskBoardTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: TaskBoardTests
+    dependencies:
+      - target: TaskBoard
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.sakurasep.taskboard.tests
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  TaskBoard:
+    build:
+      targets:
+        TaskBoard: all
+        TaskBoardTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - TaskBoardTests

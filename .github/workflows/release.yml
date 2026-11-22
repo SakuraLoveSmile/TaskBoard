@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Apply version from tag
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          VERSION="${TAG#v}"
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid release tag: $TAG" >&2
+            exit 1
+          fi
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" TaskBoard/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $GITHUB_RUN_NUMBER" TaskBoard/Info.plist
+
+      - name: Generate project
+        run: xcodegen generate
+
+      - name: Build release
+        run: |
+          xcodebuild -project TaskBoard.xcodeproj -scheme TaskBoard \
+            -configuration Release -destination 'platform=macOS' \
+            -derivedDataPath build CODE_SIGN_IDENTITY="-" build
+
+      - name: Package
+        run: |
+          set -euo pipefail
+          APP="build/Build/Products/Release/TaskBoard.app"
+          ZIP="TaskBoard-v${VERSION}.zip"
+          ditto -c -k --keepParent "$APP" "$ZIP"
+          shasum -a 256 "$ZIP" > "$ZIP.sha256"
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            TaskBoard-*.zip
+            TaskBoard-*.zip.sha256
+          generate_release_notes: true
+          body: |
+            macOS 26+ 构建，使用 ad-hoc 签名、未做公证。
+
+            首次打开若被 Gatekeeper 拦截：右键 App →「打开」，或执行
+            `xattr -dr com.apple.quarantine /Applications/TaskBoard.app`。
