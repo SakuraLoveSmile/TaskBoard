@@ -155,10 +155,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func seedDemoTasks() {
         let day = Calendar.current.startOfDay(for: Date())
         let seeds: [(title: String, status: TaskStatus, progress: Int)] = [
-            ("Alpha", .todo, 0),
-            ("Beta", .inProgress, 40),
-            ("Gamma", .blocked, 20),
-            ("Delta", .waiting, 65),
+            ("整理本周工作周报", .todo, 0),
+            ("写 Q4 复盘初稿", .inProgress, 45),
+            ("接入支付回调", .blocked, 30),
+            ("等设计确认首页改版", .waiting, 70),
         ]
         for seed in seeds {
             model.store.add(title: seed.title, day: day)
