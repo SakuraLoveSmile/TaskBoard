@@ -4,7 +4,7 @@
 
 > 纯本地数据，无账号、无遥测。AI 能力可选接入任意 OpenAI 兼容网关（默认配合本机 Magpie 使用）。
 
-![任务面板](Preview/01-tasks.png)
+![任务面板](Preview/card-ui-redesign.png)
 
 ## 功能
 
