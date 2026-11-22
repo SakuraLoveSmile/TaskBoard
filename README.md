@@ -19,7 +19,7 @@
 ## 界面
 
 <p align="center">
-  <img src="Preview/card-ui-redesign.png" width="380" alt="任务面板">
+  <img src="Preview/panel-latest.png" width="380" alt="任务面板">
 </p>
 
 ## 功能

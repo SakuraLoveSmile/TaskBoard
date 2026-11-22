@@ -26,7 +26,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         installMainMenu()
         let inMemory = ProcessInfo.processInfo.arguments.contains("--in-memory")
-        model = AppModel(store: inMemory ? TaskStore(inMemory: true) : TaskStore())
+        let demo = inMemory && ProcessInfo.processInfo.arguments.contains("--demo")
+        let defaults: UserDefaults
+        if demo {
+            // 演示/截图用独立 defaults，避免读写真实偏好与番茄钟快照
+            let suite = "com.sakurasep.taskboard.demo"
+            defaults = UserDefaults(suiteName: suite) ?? .standard
+            defaults.removePersistentDomain(forName: suite)
+        } else {
+            defaults = .standard
+        }
+        model = AppModel(
+            settings: SettingsStore(defaults: defaults),
+            store: inMemory ? TaskStore(inMemory: true) : TaskStore(),
+            pomodoroDefaults: defaults
+        )
+        if demo {
+            seedDemoTasks()
+        }
         if model.settings.autoArchiveCompleted {
             model.store.archiveCompleted(olderThanDays: model.settings.autoArchiveDays)
         }
@@ -57,6 +74,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         model.endMoveHandler = { [weak self] in self?.panelController.endDrag() }
 
         panelController.show()
+
+        if ProcessInfo.processInfo.arguments.contains("--expanded") {
+            Task { @MainActor in
+                try? await Task.sleep(for: .milliseconds(400))
+                model.expand()
+            }
+        }
 
         statusItemController = StatusItemController(model: model)
         statusItemController.onOpenSettings = { [weak self] in self?.showSettings() }
@@ -126,6 +150,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         editItem.submenu = editMenu
         mainMenu.addItem(editItem)
         NSApp.mainMenu = mainMenu
+    }
+
+    private func seedDemoTasks() {
+        let day = Calendar.current.startOfDay(for: Date())
+        let seeds: [(title: String, status: TaskStatus, progress: Int)] = [
+            ("Alpha", .todo, 0),
+            ("Beta", .inProgress, 40),
+            ("Gamma", .blocked, 20),
+            ("Delta", .waiting, 65),
+        ]
+        for seed in seeds {
+            model.store.add(title: seed.title, day: day)
+            guard let task = model.store.tasks(for: day).last else { continue }
+            model.store.setStatus(seed.status.rawValue, for: task)
+            model.store.setProgress(seed.progress, for: task)
+            model.store.setExternalProgress(seed.progress, for: task)
+        }
     }
 
     private func checkUpdatesAndExit() {
