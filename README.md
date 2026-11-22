@@ -74,6 +74,12 @@ xcodebuild -project TaskBoard.xcodeproj -scheme TaskBoard \
   ```
 
   工作流完成后，老版本即可在应用内检测到更新。
+- 无界面验证更新接口：
+
+  ```bash
+  /Applications/TaskBoard.app/Contents/MacOS/TaskBoard --check-updates
+  cat /tmp/taskboard-update.log
+  ```
 
 ## 数据与隐私
 

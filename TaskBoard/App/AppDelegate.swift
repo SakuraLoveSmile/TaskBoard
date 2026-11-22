@@ -17,6 +17,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
             return
         }
+        if ProcessInfo.processInfo.arguments.contains("--check-updates") {
+            checkUpdatesAndExit()
+            return
+        }
         if runSetupCheckIfRequested() {
             return
         }
@@ -122,6 +126,34 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         editItem.submenu = editMenu
         mainMenu.addItem(editItem)
         NSApp.mainMenu = mainMenu
+    }
+
+    private func checkUpdatesAndExit() {
+        let current = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+            ?? "0.0.0"
+        Task { @MainActor in
+            let status = await UpdateChecker.check(currentVersion: current)
+            let text: String
+            switch status {
+            case .upToDate(let version):
+                text = "status=up-to-date\ncurrent=\(version)\n"
+            case .updateAvailable(let release):
+                text = """
+                status=update-available
+                current=\(current)
+                latest=\(release.version)
+                url=\(release.pageURL.absoluteString)
+                """
+            case .failed(let message):
+                text = "status=failed\ncurrent=\(current)\nerror=\(message)\n"
+            }
+            try? text.write(
+                to: URL(fileURLWithPath: "/tmp/taskboard-update.log"),
+                atomically: true,
+                encoding: .utf8
+            )
+            NSApp.terminate(nil)
+        }
     }
 
     private func runSetupCheckIfRequested() -> Bool {
