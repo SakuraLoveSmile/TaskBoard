@@ -1,10 +1,26 @@
-# TaskBoard
+<p align="center">
+  <img src="TaskBoard/Resources/Assets.xcassets/AppIcon.appiconset/icon_512x512@2x.png" width="128" height="128" alt="TaskBoard 图标">
+</p>
 
-一个常驻 macOS 桌面的今日任务看板：右上角玻璃浮钮点开面板，AI 编排今天的阶段与并行任务，内置番茄钟、专注悬浮条、任务归档与备份。
+<h1 align="center">TaskBoard</h1>
+
+<p align="center">
+  一个常驻 macOS 桌面的今日任务看板：浮钮点开面板，AI 编排阶段与并行任务，内置番茄钟、专注悬浮条、任务归档与备份。
+</p>
+
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
+  <img src="https://img.shields.io/badge/platform-macOS%2026%2B-lightgrey.svg" alt="macOS 26+">
+  <a href="https://github.com/SakuraLoveSmile/TaskBoard/actions/workflows/ci.yml"><img src="https://github.com/SakuraLoveSmile/TaskBoard/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+</p>
 
 > 纯本地数据，无账号、无遥测。AI 能力可选接入任意 OpenAI 兼容网关（默认配合本机 Magpie 使用）。
 
-![任务面板](Preview/card-ui-redesign.png)
+## 界面
+
+<p align="center">
+  <img src="Preview/card-ui-redesign.png" width="380" alt="任务面板">
+</p>
 
 ## 功能
 
